@@ -30,6 +30,15 @@ const routers = [
             title: 'dym-login'
         },
         component: (resolve) => require(['./views/dym-login/dym-login.vue'], resolve),
+    },
+    {    
+        path: '/major',
+        name: "major",
+        meta: {
+            title: 'major'
+        },
+        component: (resolve) => require(['./views/major/major.vue'], resolve),
+        
     }
 ];
 export default routers;
