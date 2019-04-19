@@ -31,14 +31,73 @@ const routers = [
         },
         component: (resolve) => require(['./views/dym-login/dym-login.vue'], resolve),
     },
+    /* {    
+        path: '/test',
+        name: "test",
+        meta: {
+            title: 'test'
+        },
+        component: (resolve) => require(['./views/dym-login/test.vue'], resolve),
+    }, */
     {    
         path: '/major',
         name: "major",
         meta: {
-            title: 'major'
+            title: 'major',
         },
         component: (resolve) => require(['./views/major/major.vue'], resolve),
-        
+        children: [
+            {
+                path: 'retrieval',
+                name: "retrieval",
+                meta: {
+                    title: 'retrieval',
+                },
+                component: (resolve) => require(['./views/major/components/retrieval.vue'], resolve), 
+            },
+            {
+                path: 'hardware',
+                name: "hardware",
+                meta: {
+                    title: 'hardware'
+                },
+                component: (resolve) => require(['./views/major/components/hardware.vue'], resolve), 
+            },
+            {
+                path: 'internet',
+                name: "internet",
+                meta: {
+                    title: 'internet'
+                },
+                component: (resolve) => require(['./views/major/components/internet.vue'], resolve), 
+            },
+            {
+                path: 'slow',
+                name: "slow",
+                meta: {
+                    title: 'slow'
+                },
+                component: (resolve) => require(['./views/major/components/slow.vue'], resolve), 
+            },
+            {
+                path: 'user',
+                name: "user",
+                meta: {
+                    title: 'user'
+                },
+                component: (resolve) => require(['./views/major/components/user.vue'], resolve),
+                /* children: [
+                    {
+                        path: 'forget',
+                        name: "forget",
+                        meta: {
+                            title: 'forget'
+                        },
+                        component: (resolve) => require(['./views/major/component/forget.vue'], resolve), 
+                    },
+                ]  */
+            },
+        ]
     }
 ];
 export default routers;
