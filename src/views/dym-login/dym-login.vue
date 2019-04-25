@@ -7,7 +7,7 @@
                 <li><router-link :to="{name: 'login'}">账号登录</router-link></li>
             </ul>
             <Row style="padding: 10px">
-                <i-Col><Input v-model="phoneNum" icon="md-person" placeholder="此处输入手机号" style="width: 250px" /></i-Col>
+                <i-Col><Input v-model="phone_Number" icon="md-person" placeholder="此处输入手机号" style="width: 250px" /></i-Col>
             </Row>
             <Row style="padding: 10px">
                 <i-Col span="18">
@@ -34,21 +34,35 @@
                 show: true,
                 count: '',
                 timer: null,
-                phoneNum: '',
+                phone_Number: '',
                 captcha: '', 
             }
         },
         methods: {
             login() {
-                if(localStorage.name == this.name && localStorage.password == this.password && this.name !='' && this.password !=''){
+                const url = 'http://localhost:8080/dynamicLogin';
+                this.$http.post(url,
+            {          
+                phone_Number: this.phone_Number,
+                captcha: this.captcha,
+            },{emulateJSON: true})
+            .then((response) =>{console.log(response);} ,(error) => {console.log(error);});
+                if(this.name !='' && this.password !='' && response.code == 0){
                     this.name = ''
-                    this.password = ''
+                    this.captcha = ''
                     this.$router.push('/user')
                 }else{
-                    alert('用户名不存在或密码错误')
+                    alert('用户名不存在或验证码错误')
                 }    
             },
             send(){
+                const url = 'http://localgost:8080/captcha';
+                this.$http.get(url,
+            {
+                phoneNumber: this.phone_Number,
+                status: 1,
+            },{emulateJSON: true})
+            .then((response) =>{console.log(response);} ,(error) => {console.log(error);});
                 const TIME_COUNT = 60;
                 if (!this.timer) {
                     this.count = TIME_COUNT;

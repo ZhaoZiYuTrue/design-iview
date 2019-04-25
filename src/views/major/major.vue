@@ -32,20 +32,19 @@
                 </Sider>
                 <Layout>
                     <Header :style="{padding: 0}" class="layout-header-bar">
-                        <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '0 20px'}" type="md-menu" size="24"></Icon>
-                        <!-- <Breadcrumb :style="{margin: '16px 0'}">
-                            <BreadcrumbItem to="/major">主页</BreadcrumbItem>
-                            <BreadcrumbItem to="/major/retrieval">检索</BreadcrumbItem>
-                            <BreadcrumbItem to="/major/hardware">硬件状态监控</BreadcrumbItem>
-                            <BreadcrumbItem to="/major/internet">网络统计</BreadcrumbItem>
-                            <BreadcrumbItem to="/major/slow">慢查询统计</BreadcrumbItem>
-                            <BreadcrumbItem to="/major/user">个人信息</BreadcrumbItem>
-                        </Breadcrumb> -->
+                        <Row>
+                        <iCol span="1">
+                            <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '0 20px'}" type="md-menu" size="24"></Icon>
+                        </iCol>
+                        <iCol span="2" offset="21">
+                            <router-link :to="{name: 'login'}">退出登录</router-link>
+                        </iCol>
+                        </Row>
                     </Header>
-                    <div>
-                    <Content :style="{margin: '20px', background: '#fff', minHeight: '500px'}">
+                    <div :style="{margin: '20px', background: '#fff', minHeight: '500px'}">
+                    <!-- <Content > -->
                         <router-view :key="major"></router-view>
-                    </Content>
+                    <!-- </Content> -->
                     </div>
                 </Layout>
             </Layout>    

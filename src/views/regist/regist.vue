@@ -3,16 +3,25 @@
     <div class="middle">
         <Card icon="log-in" title="请使用手机号码注册" :bordered="false">
             <Row style="padding: 10px">
-                <i-Col><Input v-model="phoneNum" icon="md-person" placeholder="请输入手机号码" style="width: 250px" /></i-Col>
+                <i-Col><Input v-model="phoneNumber" icon="md-person" placeholder="请输入手机号码" style="width: 250px" /></i-Col>
             </Row> 
             <Row style="padding: 10px">
-                <i-Col><Input v-model="name" icon="md-person" placeholder="请输入账号" style="width: 250px" /></i-Col>
+                <i-Col><Input v-model="userName" icon="md-person" placeholder="请输入用户名" style="width: 250px" /></i-Col>
             </Row>
             <Row style="padding: 10px">
-                <i-Col><Input v-model="password" icon="md-lock" placeholder="请输入密码" style="width: 250px" /></i-Col>
+                <i-Col><Input v-model="password" type="password" icon="md-lock" placeholder="请输入密码" style="width: 250px" /></i-Col>
             </Row>
             <Row style="padding: 10px">
-                <i-Col><Input v-model="repeat" icon="md-lock" placeholder="请确认密码" style="width: 250px" /></i-Col>
+                <i-Col><Input v-model="repeat" type="password" icon="md-lock" placeholder="请确认密码" style="width: 250px" /></i-Col>
+            </Row>
+            <Row style="padding: 10px">
+                <i-Col span="18">
+                    <Input v-model="captcha" placeholder="请输入验证码" style="width: 180px" />
+                </i-Col>
+                <i-Col span="6">
+                    <Button v-show = "show" type="text" @click="send()" style="width: 60px">发送验证码</Button>
+                    <Button v-show = "!show" type="text" style="width: 60px">{{count}}秒后重发</Button>
+                </i-Col>
             </Row>                     
             <Row style="padding: 10px">
                 <i-Col span="12"><Button type="primary" @click="addUser()" style="width: 100px">确认</Button></i-Col>
@@ -28,33 +37,67 @@
         name: "regist",
         data(){
             return{
-                name: '',
+                show: true,
+                count: '',
+                timer: null,
+                userName: '',
                 password: '', 
-                phoneNum: '',
-                repeat: '', 
+                phoneNumber: '',
+                repeat: '',
+                captcha: '',
             }
         },
         methods:{
             addUser(){
-                if (this.phoneNum !='') {
-                    if (this.name !='') {
+            const url = 'http://localhost:8080/register';
+            this.$http.post(url,
+        {   
+            /* headers: { 'Access-Control-Allow-Origin' : '*' }, */
+            params: {
+                phoneNumber: this.phoneNumber,
+                userName: this.userName,
+                password: this.password,
+                captcha: this.captcha,
+            }
+        },{emulateJSON: true})
+        .then((response) =>{
+            this.$set('message', response.msg);
+        }).catch(function(response) {
+            console.log(response)
+        });
+                if (this.phoneNumber !='') {
+                    if (this.userName !='') {
                         if (this.password !='') {
-                            if(this.password == this.repeat){
-                                localStorage.setItem("phoneNum", this.phoneNum)
-                                localStorage.setItem("name", this.name)
-                                localStorage.setItem("password", this.password)
-                                this.name = ''
-                                this.phoneNum = ''
-                                this.repeat = ''
-                                this.password = ''
-                                alert('注册成功')
-                            }else{                   
-                                alert('两次密码输入不一致')
+                            if(this.repeat !='') {
+                                if (this.captcha !=''){
+                                    if(this.password == this.repeat){
+                                        if(this.Code == 0){
+                                            this.name = ''
+                                            this.phoneNumber = ''
+                                            this.repeat = ''
+                                            this.password = ''
+                                            this.captcha = ''
+                                            alert('注册成功')
+                                        }else{
+                                            alert(Message)
+                                        }
+
+                                    }else{
+                                        alert('两次密码输入不一致')
+                                    }
+
+                                }else{                   
+                                    alert('验证码不能为空')
+                                }  
+                            }else{
+                                alert('确认密码不能为空')
                             }
+                            
+
                         } else {
                             alert('密码不能为空')
                         }
-                    
+
                     } else {
                         alert('用户名不能为空')
                     }
@@ -65,7 +108,38 @@
             },
             cancel(){
                 this.$router.push('/login')
-            }
+            },
+            
+            send(){
+                const url = this.HOST+'/captcha';
+                var Message = '';
+                this.$http.get(url,
+                {
+                    params: {
+                        phoneNumber: this.phoneNumber,
+                        status: 0,
+                    },
+                },{emulateJSON: true})
+                .then((response) =>{
+                    this.$set(message, response.msg);
+                }).catch(function(response){
+                    console.log(response)
+                });
+                const TIME_COUNT = 60;
+                if (!this.timer) {
+                    this.count = TIME_COUNT;
+                    this.show = false;
+                    this.timer = setInterval(() => {
+                        if (this.count > 0 && this.count <= TIME_COUNT) {
+                            this.count--;
+                        } else {
+                            this.show = true;
+                            clearInterval(this.timer);
+                            this.timer = null;
+                        }
+                    }, 1000)
+                }
+            },
         }
         
     }
