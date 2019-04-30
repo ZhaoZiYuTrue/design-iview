@@ -33,6 +33,7 @@
 </template>
 
 <script>
+    
     export default {
         name: "regist",
         data(){
@@ -49,70 +50,59 @@
         },
         methods:{
             addUser(){
-            const url = 'http://localhost:8080/register';
-            this.$http.post(url,
-        {   
-            /* headers: { 'Access-Control-Allow-Origin' : '*' }, */
-            params: {
-                phoneNumber: this.phoneNumber,
-                userName: this.userName,
-                password: this.password,
-                captcha: this.captcha,
-            }
-        },{emulateJSON: true})
-        .then((response) =>{
-            this.$set('message', response.msg);
-        }).catch(function(response) {
-            console.log(response)
-        });
                 if (this.phoneNumber !='') {
                     if (this.userName !='') {
                         if (this.password !='') {
                             if(this.repeat !='') {
                                 if (this.captcha !=''){
                                     if(this.password == this.repeat){
-                                        if(this.Code == 0){
-                                            this.name = ''
-                                            this.phoneNumber = ''
-                                            this.repeat = ''
-                                            this.password = ''
-                                            this.captcha = ''
-                                            alert('注册成功')
-                                        }else{
-                                            alert(Message)
-                                        }
-
+                                        const url = '/api/register';
+                                        var formData = new FormData();
+                                        formData.append('phoneNumber',this.phoneNumber);
+                                        formData.append('userName',this.userName);
+                                        formData.append('password',this.password);
+                                        formData.append('captcha',this.captcha);
+                                        this.$http.post(url,formData,
+                                        {emulateJSON: true})
+                                        .then((response) => {
+                                            console.log(response.data.code)
+                                            if(response.data.code == 0){
+                                                this.userName = ''
+                                                this.phoneNumber = ''
+                                                this.repeat = ''
+                                                this.password = ''
+                                                this.captcha = ''                        
+                                                alert('注册成功')
+                                            }else{
+                                                alert(response.data.msg)
+                                            };                        
+                                        });                                                            
                                     }else{
                                         alert('两次密码输入不一致')
                                     }
-
                                 }else{                   
                                     alert('验证码不能为空')
-                                }  
+                                }
                             }else{
                                 alert('确认密码不能为空')
                             }
-                            
-
                         } else {
                             alert('密码不能为空')
                         }
-
                     } else {
                         alert('用户名不能为空')
                     }
-                
                 } else {
                     alert('手机号不能为空')
-                }
+                }        
             },
+
             cancel(){
                 this.$router.push('/login')
             },
             
             send(){
-                const url = this.HOST+'/captcha';
-                var Message = '';
+                const url ='/api/captcha';
                 this.$http.get(url,
                 {
                     params: {
@@ -120,10 +110,8 @@
                         status: 0,
                     },
                 },{emulateJSON: true})
-                .then((response) =>{
-                    this.$set(message, response.msg);
-                }).catch(function(response){
-                    console.log(response)
+                .then((response) => {
+                    alert(response.data.msg);
                 });
                 const TIME_COUNT = 60;
                 if (!this.timer) {

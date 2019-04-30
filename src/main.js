@@ -4,14 +4,15 @@ import VueRouter from 'vue-router';
 import Routers from './router';
 import Util from './libs/util';
 import App from './app.vue';
-import VueResource from 'vue-resource';
+
 import 'iview/dist/styles/iview.css';
+import axios from 'axios';
 
 
 Vue.use(VueRouter);
 Vue.use(iView);
-Vue.use(VueResource);
-Vue.protoType.HOST='/api'
+Vue.prototype.$http=axios;
+
 // 路由配置
 const RouterConfig = {
     mode: 'history',

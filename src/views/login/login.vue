@@ -10,7 +10,7 @@
                 <i-Col><Input v-model="userName" icon="md-person" placeholder="此处输入账号" style="width: 250px" /></i-Col>
             </Row>
             <Row style="padding: 10px">
-                <i-Col><Input v-model="password" icon="md-lock" placeholder="此处输入密码" style="width: 250px" /></i-Col>
+                <i-Col><Input v-model="password" type='password' icon="md-lock" placeholder="此处输入密码" style="width: 250px" /></i-Col>
             </Row>
                                 
             <Row style="padding: 10px">
@@ -24,47 +24,53 @@
 
 <script>
 
-export default {
+export default { 
     name: "login",
     data(){
       return{
         userName: '',
-        password: '',        
+        password: '',                
       }
     },
     methods: {
-        /* JSON.stringify(), */
-      login() {
-        const url = 'http://localhost:8080/login';
-        this.$http.post(url,
-        {          
-            userName: this.userName, 
-            password: this.password, 
-            captcha: 0,
-        },{emulateJSON: true})
-        .then((response) =>{console.log(response);} ,(error) => {console.log(error);});
-        /* const url = '/api/login';
-        this.$http.get(url,
-        {          
-            userName: this.userName, 
-            password: this.password, 
-            captcha: 0,
-        },{emulateJSON: true})
-        .then((response) =>{console.log(response);} ,(error) => {console.log(error);}); */
-        /* if(localStorage.name == this.userName && localStorage.password == this.password && this.userName !='' && this.password !=''){
-                    this.userName = ''
-                    this.password = ''
-                    this.$router.push('/major')
+        login() {
+            if(this.password !=''){
+                if(this.userName !=''){
+                    const url = '/api/login';
+                    var formData = new FormData();
+                    formData.append('userName',this.userName);
+                    formData.append('password',this.password);
+                    formData.append('captcha','0');
+                    this.$http.post(url,formData
+                    ,{emulateJSON: true})
+                    .then((response) => {
+                        console.log(response.data.code)
+                        if(response.data.code == 0){
+                            this.userName = ''
+                            this.password = ''
+                            this.$router.push('/major')
+                        }else{
+                            alert(response.data.msg)
+                        }
+                    });
                 }else{
-                    alert('用户名不存在或密码错误')
-                }    */ 
-      },
-      regist(){
+                    alert('密码不能为空')
+                }
+            }else{
+                alert('用户名不能为空')
+            }        
+        },         
+        regist(){
         this.$router.push('/regist')
-      }
-    },
-}
-</script>
+      }    
+    },    
+}            
+</script>          
+      
+      
+    
+
+
 
 <style scoped>
     

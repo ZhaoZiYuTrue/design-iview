@@ -7,7 +7,7 @@
                 <li><router-link :to="{name: 'login'}">账号登录</router-link></li>
             </ul>
             <Row style="padding: 10px">
-                <i-Col><Input v-model="phone_Number" icon="md-person" placeholder="此处输入手机号" style="width: 250px" /></i-Col>
+                <i-Col><Input v-model="phoneNumber" icon="md-person" placeholder="此处输入手机号" style="width: 250px" /></i-Col>
             </Row>
             <Row style="padding: 10px">
                 <i-Col span="18">
@@ -26,7 +26,7 @@
 </div>
 </template>
 
-<script>
+<script>    
     export default {
         name: "dym-login",
         data() {
@@ -34,35 +34,50 @@
                 show: true,
                 count: '',
                 timer: null,
-                phone_Number: '',
-                captcha: '', 
+                phoneNumber: '',
+                captcha: '',
             }
         },
         methods: {
             login() {
-                const url = 'http://localhost:8080/dynamicLogin';
-                this.$http.post(url,
-            {          
-                phone_Number: this.phone_Number,
-                captcha: this.captcha,
-            },{emulateJSON: true})
-            .then((response) =>{console.log(response);} ,(error) => {console.log(error);});
-                if(this.name !='' && this.password !='' && response.code == 0){
-                    this.name = ''
-                    this.captcha = ''
-                    this.$router.push('/user')
-                }else{
-                    alert('用户名不存在或验证码错误')
+                if(this.phoneNumber !=''){
+                    if(this.captcha !=''){
+                        const url = '/api/dynamicLogin';
+                        var formData = new FormData();
+                        formData.append('phoneNumber',this.phoneNumber)
+                        formData.append('captcha',this.captcha)
+                        this.$http.post(url,formData,
+                        {emulateJSON: true})
+                        .then((response) => {
+                            console.log(response.data.code)
+                            if(response.data.code == 0){
+                                this.phoneNumber = ''
+                                this.captcha = ''
+                                this.$router.push('/major')
+                            }else{
+                                alert(response.data.msg)
+                            }  
+                        });    
+                    } else{    
+                        alert('验证码不能为空')
+                    }
+                }else{                
+                    alert('手机号不能为空')
                 }    
-            },
+            },        
+            
             send(){
-                const url = 'http://localgost:8080/captcha';
+                const url = '/api/captcha';
                 this.$http.get(url,
-            {
-                phoneNumber: this.phone_Number,
-                status: 1,
-            },{emulateJSON: true})
-            .then((response) =>{console.log(response);} ,(error) => {console.log(error);});
+                {
+                    params: {
+                        phoneNumber: this.phoneNumber,
+                        status: 1,
+                    },
+                },{emulateJSON: true})
+                .then((response) => {
+                    alert(response.data.msg)
+                });
                 const TIME_COUNT = 60;
                 if (!this.timer) {
                     this.count = TIME_COUNT;

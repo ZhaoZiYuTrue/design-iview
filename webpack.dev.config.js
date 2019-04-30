@@ -33,13 +33,15 @@ module.exports = merge(webpackBaseConfig, {
         })
     ],
     devServer: {
+        inline: true,
         proxy: {
             '/api': {
-                target : 'http://localhost:8080',
-                pathRewhite: {'^/api' : '/'}, 
+                target: 'http://localhost:8080',
                 changeOrigin: true,
-                secure: false, 
-            },       
-        },
+                pathRewrite: {
+                    '^/api': '/'
+                }
+            }
+        }
     },
 });
