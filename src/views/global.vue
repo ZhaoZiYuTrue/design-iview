@@ -1,8 +1,8 @@
 <script>
-const Code = '';
-const Message = '';
+const Token = '';
+const Id = '';
     export default {
-        Code,
-        Message,
+        Token,
+        Id,
     }
 </script>

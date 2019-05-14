@@ -16,8 +16,10 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
+    "echarts": "^4.2.1",
     "http-proxy-middleware": "^0.19.1",
     "iview": "^3.4.0",
+    "v-charts": "^1.19.0",
     "vue": "^2.5.16",
     "vue-resource": "^1.5.1",
     "vue-router": "^2.8.1"

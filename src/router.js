@@ -56,12 +56,28 @@ const routers = [
                 component: (resolve) => require(['./views/major/components/retrieval.vue'], resolve), 
             },
             {
-                path: 'hardware',
-                name: "hardware",
+                path: 'cpu',
+                name: "cpu",
                 meta: {
-                    title: 'hardware'
+                    title: 'cpu'
                 },
-                component: (resolve) => require(['./views/major/components/hardware.vue'], resolve), 
+                component: (resolve) => require(['./views/major/components/cpu.vue'], resolve), 
+            },
+            {
+                path: 'memory',
+                name: "memory",
+                meta: {
+                    title: 'memory'
+                },
+                component: (resolve) => require(['./views/major/components/memory.vue'], resolve), 
+            },
+            {
+                path: 'netflow',
+                name: "netflow",
+                meta: {
+                    title: 'netflow'
+                },
+                component: (resolve) => require(['./views/major/components/netflow.vue'], resolve), 
             },
             {
                 path: 'internet',
@@ -95,7 +111,7 @@ const routers = [
                         },
                         component: (resolve) => require(['./views/major/component/forget.vue'], resolve), 
                     },
-                ]  */
+                ] */ 
             },
         ]
     }

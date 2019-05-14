@@ -1,20 +1,23 @@
 <template>
     <div class="layout">
-        <!-- <router-view :key="major"></router-view> -->
-        <Layout>
-            <Header style="border-bottom:1px solid #fff">
-                <div class="layout-logo-left"></div>
-            </Header>
-            <Layout>
+            <Layout :style="{minHeight: '100vh'}">
                 <Sider ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed">
                     <Menu active-name="user" theme="dark" width="auto" :class="menuitemClasses" @on-select="turnToPage">
                         <MenuItem name="retrieval">
                             <Icon type="ios-search"></Icon>
                             <span>检索</span>
                         </MenuItem>
-                        <MenuItem name="hardware">
-                            <Icon type="ios-alert-outline"></Icon>
-                            <span>硬件监控</span>
+                        <MenuItem name="cpu">
+                            <Icon type="ios-calculator"></Icon>
+                            <span>CPU状态</span>
+                        </MenuItem>
+                        <MenuItem name="memory">
+                            <Icon type="ios-albums"/>
+                            <span>内存状态</span>
+                        </MenuItem>
+                        <MenuItem name="netflow">
+                            <Icon type="ios-barcode-outline" />
+                            <span>流量数据</span>
                         </MenuItem>
                         <MenuItem name="internet">
                             <Icon type="ios-planet"></Icon>
@@ -41,20 +44,18 @@
                         </iCol>
                         </Row>
                     </Header>
-                    <div :style="{margin: '20px', background: '#fff', minHeight: '500px'}">
-                    <!-- <Content > -->
-                        <router-view :key="major"></router-view>
-                    <!-- </Content> -->
+                    
+                    <div :style="{margin: '20px', background: '#fff'}">
+                        
+                            <router-view :key="1"></router-view>
+    
                     </div>
+                    
                 </Layout>
             </Layout>    
-        </Layout>
     </div>
 </template>
 <script>
-
-/* import routers from '@/router/routers'
-import { getNewTagList, routeEqual } from '@/libs/util' */
 
     export default {
         data () {
@@ -120,7 +121,6 @@ import { getNewTagList, routeEqual } from '@/libs/util' */
         height: 30px;
         background: #5b6270;
         border-radius: 3px;
-        /* margin: 15px auto; */
         float: left;
         position: relative;
         top: 15px;

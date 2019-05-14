@@ -23,7 +23,7 @@
 </template>
 
 <script>
-
+import global_ from '../global.vue'
 export default { 
     name: "login",
     data(){
@@ -44,13 +44,17 @@ export default {
                     this.$http.post(url,formData
                     ,{emulateJSON: true})
                     .then((response) => {
-                        console.log(response.data.code)
+                        localStorage.setItem("token",response.data.data.token);
+                        localStorage.setItem("id",response.data.data.id);  
+                        /* global_.Id = response.data.data.id;
+                        global_.Token = response.data.data.token; */
                         if(response.data.code == 0){
                             this.userName = ''
                             this.password = ''
                             this.$router.push('/major')
                         }else{
-                            alert(response.data.msg)
+                            alert(response.data.msg);
+                            
                         }
                     });
                 }else{

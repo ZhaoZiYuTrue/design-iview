@@ -76,7 +76,11 @@
                     },
                 },{emulateJSON: true})
                 .then((response) => {
-                    alert(response.data.msg)
+                    /* global_.Id = response.data.data.id;
+                    global_.Token = response.data.data.token; */
+                    alert(response.data.msg);
+                    localStorage.setItem("id",response.data.data.id);
+                    localStorage.setItem("token",response.data.data.token);
                 });
                 const TIME_COUNT = 60;
                 if (!this.timer) {
