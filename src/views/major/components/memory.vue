@@ -1,27 +1,32 @@
 <template>
     <div>
         <Row style="border-bottom:1px solid #fff">
-            <iCol span="4" offset="20">
-                <DatePicker type="daterange" placement="bottom-end" placeholder="Select date" style="width: 200px"></DatePicker>
+            <iCol span="4" offset='15'>
+                <DatePicker v-model="startDate" @on-ok="DatePicker()" type="datetime" placeholder="选择开始日期" style="width: 200px" format='yyyy-MM-dd HH:mm:ss'>
+                </DatePicker>
+            </iCol>
+            <iCol span="4">
+                <DatePicker v-model="endDate" @on-ok="DatePicker()" type="datetime" placeholder="选择结束日期" style="width: 200px" format='yyyy-MM-dd HH:mm:ss'>
+                </DatePicker>
             </iCol>
         </Row>    
         <Scroll height='650'>
             <Row >
                 <iCol span="8">
                     <Card>
-                        <p slot='title'>内存使用率</p>   
-                        <ve-gauge :data="memoryData1" :settings="memoryGauge"></ve-gauge>
+                        <p slot='title'>CPU使用率</p>   
+                        <ve-gauge :data="chartData1" :settings="chartSettings1"></ve-gauge>
                     </Card>
                 </iCol>
                 <iCol span="16">
                     <Card>
-                        <ve-bar :data="memoryData2" :settings="memoryBar"></ve-bar> 
+                        <ve-bar :data="chartData2" :settings="chartSettings2"></ve-bar> 
                     </Card>
                 </iCol>
             </Row>
             <Row>
                 <Card>
-                    <ve-line :data="memoryData3" :settings="memoryLine"></ve-line>
+                    <ve-line :data="chartData3" :settings="chartSettings3"></ve-line>
                 </Card>
             </Row>
         </Scroll> 
@@ -29,13 +34,56 @@
         
 </template>
 
-<script> 
+<script>
+    import global_ from '../../global.vue'
+    const DATA1_FROM_BACKEND = {
+    columns: ['type', 'value'],
+    rows: [
+        { type: '占比', value: 0.5 },
+    ]
+    }
+    const EMPTY_DATA1 = {
+        columns: [],
+        rows: []         
+    }
+
+    const DATA2_FROM_BACKEND = {
+    columns: ['进程', '内存使用率'],
+    rows: [
+        { '进程': '进程1', '内存使用率': 500 },
+        { '进程': '进程2', '内存使用率': 530 },
+        { '进程': '进程3', '内存使用率': 823 },
+        { '进程': '进程4', '内存使用率': 723 },
+        { '进程': '进程5', '内存使用率': 792 },
+        { '进程': '进程6', '内存使用率': 593 },
+    ]
+    }
+    const EMPTY_DATA2 = {
+        columns: [],
+        rows: []         
+    }
+
+    const DATA3_FROM_BACKEND = {
+    columns: ['时间', '内存使用率'],
+    rows: [
+        { '时间': '时间8:00', '内存使用率': 500 },
+        { '时间': '时间9:00', '内存使用率': 530 },
+        { '时间': '时间10:00', '内存使用率': 923 },
+        { '时间': '时间11:00', '内存使用率': 723 },
+        { '时间': '时间12:00', '内存使用率': 792 },
+        { '时间': '时间13:00', '内存使用率': 593 },   
+    ]
+    }
+    const EMPTY_DATA3 = {
+        columns: [],
+        rows: []         
+    }
+
     export default {
         name: 'memory',
         data () {
             // 内存仪表盘
-            this.memoryGauge = {
-
+            this.chartSettings1 = {
                 dataType: {
                     '占比': 'percent'
                 },
@@ -44,10 +92,10 @@
                         min: 0,
                         max: 1
                     }
-                }
+                },     
             }
             // 内存条形图
-            this.memoryBar = {
+            this.chartSettings2 = {
                 metrics: ['内存使用率'],
                 dataOrder: {
                     label: '内存使用率',
@@ -55,49 +103,99 @@
                 }
             }
             // 内存折线图
-            this.memoryLine = {
+            this.chartSettings3 = {
                 stack: { '进程': ['内存使用率'] },
                 area: true
             }
             return {
-                memoryData1: {
-                    columns: ['type', 'value'],
-                    rows: [
-                        { type: '占比', value: 0.5 }
-                    ]
+                userId: '',
+                userToken: '',
+                startDate: '',
+                endDate: '',
+                chartData1: {
+                    columns: [],
+                    rows: []   
                 },
-                memoryData2: {
-                    columns: ['进程', '内存使用率'],
-                    rows: [
-                        { '进程': '进程1', '内存使用率': 500 },
-                        { '进程': '进程2', '内存使用率': 530 },
-                        { '进程': '进程3', '内存使用率': 823 },
-                        { '进程': '进程4', '内存使用率': 723 },
-                        { '进程': '进程5', '内存使用率': 792 },
-                        { '进程': '进程6', '内存使用率': 593 },
-                    ]
+                chartData2: {
+                    columns: [],
+                    rows: []
                 },
-                memoryData3: {
-                    columns: ['时间', '内存使用率'],
-                    rows: [
-                        { '时间': '时间8:00', '内存使用率': 500 },
-                        { '时间': '时间9:00', '内存使用率': 530 },
-                        { '时间': '时间10:00', '内存使用率': 923 },
-                        { '时间': '时间11:00', '内存使用率': 723 },
-                        { '时间': '时间12:00', '内存使用率': 792 },
-                        { '时间': '时间13:00', '内存使用率': 593 },
-                    ]
+                chartData3: {
+                    columns: [],
+                    rows: []   
                 },
+                loading: false,
+                dataEmpty: false,
             }
         },
+        mounted(){
+            /* console.log('mounted'); */
+        },
         methods: {
-            /* handleReachEdge (dir) {
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 2000);
+            DatePicker() {
+                var startTime = new Date(this.startDate).getTime();
+                var endTime = new Date(this.endDate).getTime();
+                const url = '';
+                this.$http.get(url,
+                {
+                    params: {
+                        id: this.userId,
+                        token: this.userToken,
+                        startTime: this.startTime,
+                        endTime: this.endTime,
+                    } 
+                },{emulateJSON: true})
+                .then((response) => {
+                    
                 });
-            } */
-        }
+            },
+            getData1 () {
+                var data1;
+                const url = '/api/system/memory/total';
+                this.$http.get(url,
+                {
+                    params: {
+                        /* id: global_Id,
+                        token: global_Token, */
+                        id: this.userId,
+                        token: this.userToken,
+                    } 
+                },{emulateJSON: true})
+                .then((response) => {
+                    data1 = response.data.data.system.memory.used.pct;
+                    this.chartData1.columns = ['type', 'value'];
+                    this.chartData1.rows= [
+                        { type: '占比', value: data1 },
+                    ]   
+                });
+            },
+            getData2 () {
+                var Rows = [];
+                const url = '/api/system/memory/rank';
+                this.$http.get(url,
+                {
+                    params: {
+                        /* id: global_Id,
+                        token: global_Token, */
+                        id: this.userId,
+                        token: this.userToken,
+                    } 
+                },{emulateJSON: true})
+                .then((response) => {
+                    response.data.data.forEach(function(item) {
+                        Rows.push({'进程': item.name,'内存使用率': item.memory.rss.pct});
+                    })
+                    this.chartData2.columns = ['进程', '内存使用率'];
+                    this.chartData2.rows= Rows;
+                });
+            },
+        },
+        created () {
+            this.userId = localStorage.getItem('id');
+            this.userToken = localStorage.getItem('token');
+            this.getData1();
+            this.getData2();
+            /* console.log('created'); */
+        },   
     }
 </script>
