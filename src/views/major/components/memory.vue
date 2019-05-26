@@ -2,7 +2,7 @@
     <div>
         <Row style="border-bottom:1px solid #fff">
             <iCol span="4" offset='15'>
-                <DatePicker v-model="startDate" @on-ok="DatePicker()" type="datetime" placeholder="选择开始日期" style="width: 200px" format='yyyy-MM-dd HH:mm:ss'>
+                <DatePicker v-model="startDate" type="datetime" placeholder="选择开始日期" style="width: 200px" format='yyyy-MM-dd HH:mm:ss'>
                 </DatePicker>
             </iCol>
             <iCol span="4">
@@ -14,7 +14,7 @@
             <Row >
                 <iCol span="8">
                     <Card>
-                        <p slot='title'>CPU使用率</p>   
+                        <p slot='title'>内存使用率</p>   
                         <ve-gauge :data="chartData1" :settings="chartSettings1"></ve-gauge>
                     </Card>
                 </iCol>
@@ -36,49 +36,6 @@
 
 <script>
     import global_ from '../../global.vue'
-    const DATA1_FROM_BACKEND = {
-    columns: ['type', 'value'],
-    rows: [
-        { type: '占比', value: 0.5 },
-    ]
-    }
-    const EMPTY_DATA1 = {
-        columns: [],
-        rows: []         
-    }
-
-    const DATA2_FROM_BACKEND = {
-    columns: ['进程', '内存使用率'],
-    rows: [
-        { '进程': '进程1', '内存使用率': 500 },
-        { '进程': '进程2', '内存使用率': 530 },
-        { '进程': '进程3', '内存使用率': 823 },
-        { '进程': '进程4', '内存使用率': 723 },
-        { '进程': '进程5', '内存使用率': 792 },
-        { '进程': '进程6', '内存使用率': 593 },
-    ]
-    }
-    const EMPTY_DATA2 = {
-        columns: [],
-        rows: []         
-    }
-
-    const DATA3_FROM_BACKEND = {
-    columns: ['时间', '内存使用率'],
-    rows: [
-        { '时间': '时间8:00', '内存使用率': 500 },
-        { '时间': '时间9:00', '内存使用率': 530 },
-        { '时间': '时间10:00', '内存使用率': 923 },
-        { '时间': '时间11:00', '内存使用率': 723 },
-        { '时间': '时间12:00', '内存使用率': 792 },
-        { '时间': '时间13:00', '内存使用率': 593 },   
-    ]
-    }
-    const EMPTY_DATA3 = {
-        columns: [],
-        rows: []         
-    }
-
     export default {
         name: 'memory',
         data () {
@@ -133,20 +90,28 @@
         },
         methods: {
             DatePicker() {
-                var startTime = new Date(this.startDate).getTime();
-                var endTime = new Date(this.endDate).getTime();
-                const url = '';
+                var timeStamp1 = new Date(this.startDate).getTime();
+                var timeStamp2 = new Date(this.endDate).getTime();
+                var Rows = [];
+                const url = '/api/system/memory';
                 this.$http.get(url,
                 {
                     params: {
                         id: this.userId,
                         token: this.userToken,
-                        startTime: this.startTime,
-                        endTime: this.endTime,
+                        startTime: timeStamp1,
+                        endTime:   timeStamp2,
                     } 
                 },{emulateJSON: true})
                 .then((response) => {
-                    
+                    console.log(response.data.msg);
+                    response.data.data.forEach(function(item) {
+                        var timeStamp = new Date(item.timestamp);
+                        var time = timeStamp.toLocaleString();
+                        Rows.push({'时间': time,'内存使用率': item.system.memory.used.pct,});
+                    })
+                    this.chartData3.columns = ['时间','内存使用率'];
+                    this.chartData3.rows = Rows;
                 });
             },
             getData1 () {
@@ -183,7 +148,7 @@
                 },{emulateJSON: true})
                 .then((response) => {
                     response.data.data.forEach(function(item) {
-                        Rows.push({'进程': item.name,'内存使用率': item.memory.rss.pct});
+                        Rows.push({'进程': item.name + "(" + item.pid + ")",'内存使用率': item.memory.rss.pct});
                     })
                     this.chartData2.columns = ['进程', '内存使用率'];
                     this.chartData2.rows= Rows;
@@ -195,6 +160,7 @@
             this.userToken = localStorage.getItem('token');
             this.getData1();
             this.getData2();
+            //this.DatePicker();
             /* console.log('created'); */
         },   
     }
